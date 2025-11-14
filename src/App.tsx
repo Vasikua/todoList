@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import TodoInput from "./components/todoInupt/TodoInupt";
 import TodoList from "./components/todoList/TodoList";
+import SerchForm from "./components/serchForm/SerchForm";
 
 export interface Todo {
   id: number;
@@ -8,8 +9,9 @@ export interface Todo {
 }
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [todoValue, setTodoValue] = useState<string>('')
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todoValue, setTodoValue] = useState<string>('');
+  const [searchValue, setSearchValue] = useState<string>('');
 
   function persistData(newList: Todo[]) {
     localStorage.setItem('todos', JSON.stringify({ todos: newList }))
@@ -41,6 +43,10 @@ function App() {
     handleDeleteTodo(id)
   }
 
+  const visibleTodos = todos.filter((todo) =>
+    todo.todoValue.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
   useEffect(() => {
     const localTodos = localStorage.getItem("todos");
     if (!localTodos) return;
@@ -56,7 +62,8 @@ function App() {
   return (
     <>
       <TodoInput todoValue={todoValue} setTodoValue={setTodoValue} handleAddTodos={handleAddTodos} />
-      <TodoList handleEditTodo={handleEditTodo} handleDeleteTodo={handleDeleteTodo} todos={todos} />
+      <SerchForm search={searchValue} setSearch={setSearchValue} />
+      <TodoList handleEditTodo={handleEditTodo} handleDeleteTodo={handleDeleteTodo} todos={visibleTodos} />
     </>
   )
 }
